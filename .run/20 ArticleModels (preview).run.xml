@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="20 ArticleModels (preview)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.decerto.leszek.confitura2026.demo20_article.ArticleModels" />
+    <module name="confitura2026" />
+    <option name="VM_PARAMETERS" value="--enable-preview -XX:+EnableDynamicAgentLoading --sun-misc-unsafe-memory-access=allow --add-exports java.base/jdk.internal.value=ALL-UNNAMED --add-exports java.base/jdk.internal.misc=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang=ALL-UNNAMED -Djdk.attach.allowAttachSelf=true -Djol.magicFieldOffset=true" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

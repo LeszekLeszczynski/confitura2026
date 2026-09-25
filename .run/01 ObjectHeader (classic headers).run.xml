@@ -1,0 +1,11 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="01 ObjectHeader (classic headers)" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="com.decerto.leszek.confitura2026.demo01_headers.ObjectHeader" />
+    <module name="confitura2026" />
+    <option name="VM_PARAMETERS" value="-XX:+EnableDynamicAgentLoading --sun-misc-unsafe-memory-access=allow -Djdk.attach.allowAttachSelf=true -Djol.magicFieldOffset=true -XX:-UseCompactObjectHeaders" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
