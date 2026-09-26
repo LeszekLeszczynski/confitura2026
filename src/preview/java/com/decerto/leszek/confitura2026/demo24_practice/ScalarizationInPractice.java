@@ -67,7 +67,7 @@ public class ScalarizationInPractice {
 
   // ---- 2. domain arithmetic in a hot loop -------------------------------------------------------
 
-  value record Money(long cents) {
+  static value record Money(long cents) {
     static final Money ZERO = new Money(0);
 
     Money plus(Money other) {
@@ -79,7 +79,7 @@ public class ScalarizationInPractice {
     }
   }
 
-  record IdentityMoney(long cents) {
+  static record IdentityMoney(long cents) {
     static final IdentityMoney ZERO = new IdentityMoney(0);
 
     IdentityMoney plus(IdentityMoney other) {
@@ -91,9 +91,9 @@ public class ScalarizationInPractice {
     }
   }
 
-  record Risk(Money base, int loading) {}
+  static record Risk(Money base, int loading) {}
 
-  record IdentityRisk(IdentityMoney base, int loading) {}
+  static record IdentityRisk(IdentityMoney base, int loading) {}
 
   static final List<Risk> RISKS = IntStream.range(0, SIZE)
       .mapToObj(i -> new Risk(new Money(1000 + i), 100 + i % 50))

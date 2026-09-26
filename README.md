@@ -111,7 +111,7 @@ The preview-only ones need `-p`; the rest run both ways, and the contrast betwee
 | 21 | `JacksonInvoice` *(-p)* | the saving does not survive serialization |
 | 22 | `PeriodVsLine` / `ValuePeriodVsLine` | one byte of payload decides flat vs not |
 | 23 | `Scalarization` *(-p)* | the fields live in registers; the object is never built |
-| 24 | `DateChain` / `ScalarizationInPractice` | what that buys in practice — and why a `stream()` throws it away |
+| 24 | `DateChain` / `ScalarizationInPractice` / `ScalarizationSpeed` | what that buys in practice, in bytes and in time — and why a `stream()` throws it away |
 | 25 | `WarmUpCost` *(-p)* | the cost of reading a flattened field, and the moment it disappears |
 
 ### 01 `ObjectHeader` — what does an empty object cost?
@@ -677,6 +677,26 @@ boundary. So: **in hot code with value classes, prefer the loop** — until gene
 
 The pricing rows say the other half: warmed up, the domain type is free while its identity twin still allocates
 16 B per element. Everything else in the C1 column is demo 25's transient warm-up cost, not a property of the code.
+
+**And it is faster, not just leaner.** `ScalarizationSpeed` (JMH, `-prof gc` built in, ~1 min) runs one loop —
+the pricing calculation — three ways over 10,000 elements, and reports time and allocation side by side. The three
+`sum` rows below were measured with the same harness and are kept here for reference; the checked-in benchmark
+stays on the pricing comparison so it is quick enough to run live:
+
+| benchmark | time | allocation |
+|---|---|---|
+| `pricingValue` — value `Money` | **12.43 µs/op** | **0.08 B/op** |
+| `pricingIdentity` — identity twin | 22.45 µs/op | 160,000 B/op |
+| `pricingRawLong` — no domain type at all | 11.58 µs/op | 0.07 B/op |
+| `sumLoopValue` — `for` + `total.plus(m)` | **5.17 µs/op** | **0.03 B/op** |
+| `sumLoopIdentity` — identity twin | 19.25 µs/op | 160,000 B/op |
+| `sumStreamValue` — `stream().reduce(Money::plus)` | 22.43 µs/op | 240,120 B/op |
+
+The pricing loop is **1.8× faster** than its identity twin and lands within 7 % of a raw `long` — the domain type
+costs essentially nothing. The plain summation is **3.7× faster**. And the stream row is the same value type doing
+the same arithmetic **4.3× slower than the loop**, purely because `BinaryOperator<T>` erases to `Object`: 240 KB of
+buffered `Money` per operation, at 10 GB/s of allocation rate. So the earlier "prefer the loop" is not only about
+GC pressure — it is a 4× difference in wall-clock time on this build.
 
 ### 25 `WarmUpCost` — reading a flattened field, before and after C2  *(preview only)*
 `./run.sh -p WarmUpCost`
