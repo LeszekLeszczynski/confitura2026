@@ -41,6 +41,7 @@ public final class ValueMoneyArithmetic {
   }
 
   // ---- diagnostic: the exact shape of demo 24 - two operations, no rounding, no validation ------
+  // computes a different number on purpose (no tax, no rounding): compare its time to demo 24 only
 
   public static value record PlainMoney(long cents) {
     public static final PlainMoney ZERO = new PlainMoney(0);
@@ -89,6 +90,12 @@ public final class ValueMoneyArithmetic {
   public static value record ValueBigMoney(BigDecimal amount) {
     static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     public static final ValueBigMoney ZERO = new ValueBigMoney(BigDecimal.ZERO.setScale(2));
+
+    public ValueBigMoney {
+      if (amount.signum() < 0) {
+        throw new IllegalArgumentException("negative amount: " + amount);
+      }
+    }
 
     public ValueBigMoney percent(int percent) {
       return new ValueBigMoney(amount.multiply(BigDecimal.valueOf(percent))

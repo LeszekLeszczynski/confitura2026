@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 /**
- * The same premium calculation - base amount, a loading percentage, then tax - written three ways here,
- * plus two value-class versions in ValueMoneyArithmetic. Every variant must produce the same answer to the cent; the benchmark asserts it before measuring.
+ * The same premium calculation - base amount, a loading percentage, then tax - written three ways
+ * here, plus two value-class versions in ValueMoneyArithmetic. Every variant must produce the same
+ * answer to the cent; the benchmark asserts it before measuring.
  *
- * <p>Amounts are held in cents. A premium will not exceed 92 quadrillion cents, so a long is not a
- * compromise here - reaching for BigDecimal is about rounding on division, not about range.
+ * <p>Amounts are held in cents. A long holds about 9.2e18 cents, and even cents * percent in
+ * percentOf stays safe up to roughly 7e16 cents - far beyond any premium - so a long is not a
+ * compromise here. Reaching for BigDecimal is about rounding on division, not about range.
  */
 public final class MoneyArithmetic {
 
@@ -34,17 +36,14 @@ public final class MoneyArithmetic {
 
   // ---- 2. a domain type wrapping BigDecimal (the reflex) --------------------------------------
 
-  public static final class BigMoney {
+  public record BigMoney(BigDecimal amount) {
     static final BigDecimal HUNDRED = BigDecimal.valueOf(100);
     public static final BigMoney ZERO = new BigMoney(BigDecimal.ZERO.setScale(2));
 
-    final BigDecimal amount;
-
-    public BigMoney(BigDecimal amount) {
+    public BigMoney {
       if (amount.signum() < 0) {
         throw new IllegalArgumentException("negative amount: " + amount);
       }
-      this.amount = amount;
     }
 
     public BigMoney percent(int percent) {

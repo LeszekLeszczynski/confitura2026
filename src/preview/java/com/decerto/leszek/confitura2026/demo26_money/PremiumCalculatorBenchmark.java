@@ -80,11 +80,14 @@ public class PremiumCalculatorBenchmark {
     var money = MoneyArithmetic.premiumLongMoney(longBases, loadings);
     var value = ValueMoneyArithmetic.premiumValueMoney(valueBases, loadings);
     var valueBig = ValueMoneyArithmetic.premiumValueBigMoney(valueBigBases, loadings);
-    if (raw != big || raw != money || raw != value || raw != valueBig) {
-      throw new AssertionError("variants disagree: raw=%d big=%d money=%d value=%d valueBig=%d"
-          .formatted(raw, big, money, value, valueBig));
+    // the unchecked diagnostic must do the same work too, or it isolates nothing
+    var unchecked = ValueMoneyArithmetic.premiumUncheckedMoney(uncheckedBases, loadings);
+    if (raw != big || raw != money || raw != value || raw != valueBig || raw != unchecked) {
+      throw new AssertionError(
+          "variants disagree: raw=%d big=%d money=%d value=%d valueBig=%d unchecked=%d"
+              .formatted(raw, big, money, value, valueBig, unchecked));
     }
-    System.out.printf("%n# all five variants agree: %,d cents for %,d risks%n", raw, n);
+    System.out.printf("%n# all five variants (and the unchecked diagnostic) agree: %,d cents for %,d risks%n", raw, n);
   }
 
   @Benchmark
